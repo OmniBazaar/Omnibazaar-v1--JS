@@ -1,6 +1,6 @@
 import assert from "assert";
-import {Apis, ChainConfig} from "bitsharesjs-ws";
-import { ChainStore } from "../../lib";
+import {Apis, ChainConfig} from "omnibazaarjs-ws";
+import { ChainStore, FetchChain } from "../../lib";
 
 var coreAsset;
 
@@ -8,7 +8,7 @@ describe("ChainStore", () => {
     // Connect once for all tests
     before(function() {
         /* use wss://bitshares.openledger.info/ws if no local node is available */
-        return Apis.instance("wss://bitshares.openledger.info/ws", true).init_promise.then(function (result) {
+        return Apis.instance("wss://eu.openledger.info/ws", true).init_promise.then(function (result) {
             coreAsset = result[0].network.core_asset;
             return ChainStore.init();
         });
@@ -39,6 +39,9 @@ describe("ChainStore", () => {
         });
 
         it("Asset by name", function() {
+            FetchChain("getAccount", "swoopyyy7").then((res) => {
+                console.log("REEEEESUUUUULT", res);
+            });
             return new Promise( function(resolve) {
                 ChainStore.subscribe(function() {
                     if (ChainStore.getAsset(coreAsset) !== undefined) {
@@ -90,6 +93,7 @@ describe("ChainStore", () => {
             return new Promise( function(resolve) {
                 ChainStore.subscribe(function() {
                     if (ChainStore.getAccount("proxy-to-self") !== undefined) {
+
                         assert(ChainStore.getAccount("proxy-to-self") != null);
                         resolve();
                     }
