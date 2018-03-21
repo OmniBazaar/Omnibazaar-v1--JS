@@ -16,6 +16,7 @@
     "prebuild": "npm run clean",
     "build": "cross-env BABEL_ENV=cjs babel lib -d dist",
     "build-es": "cross-env BABEL_ENV=es babel lib -d es",
+    "build-examples": "cross-env BABEL_ENV=cjs babel examples -d dist-examples",
     "postbuild": "npm run browserify && npm run build-es",
     "build:watch": "babel lib -d dist --watch",
     "prebrowserify": "mkdirp build",
