@@ -16,11 +16,12 @@ Apis.instance("ws://35.171.116.3:8090", true)
     ChainStore.init().then(() => {
         Promise.all([
             FetchChain('getAccount', 'denis77'),
-            FetchChain('getAccount', 'denis88')
+            FetchChain('getAccount', 'denis88'),
+            FetchChain('getAccount', 'denis10')
         ]).then(result => {
-            const [denis77, denis88] = result;
+            const [denis77, denis88, denis10] = result;
             let tr = new TransactionBuilder();
-            tr.add_type_operation("transfer", {
+            const operation1 = tr.get_type_operation("transfer", {
                 from: denis77.get('id'),
                 to: denis88.get('id'),
                 reputation_vote: 5,
@@ -29,6 +30,17 @@ Apis.instance("ws://35.171.116.3:8090", true)
                     amount: 1000000
                 },
             });
+            const operation2 = tr.get_type_operation("transfer", {
+                from: denis77.get('id'),
+                to: denis10.get('id'),
+                reputation_vote: 5,
+                amount: {
+                    asset_id: "1.3.0",
+                    amount: 1000000
+                },
+            });
+            tr.operations.push(operation1);
+            tr.operations.push(operation2);
             let key1 = generateKeyFromPassword("denis77", "active", "P5Jib3SrwkFpunWXDYreu2MK5DLzg9FGija47DPLr3XnU");
             tr.add_signer(key1.privKey, key1.privKey.toPublicKey().toPublicKeyString("BTS"));
             tr.set_required_fees();
