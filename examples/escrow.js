@@ -9,7 +9,7 @@ import  { generateKeyFromPassword, memoObject } from './utils';
 ChainConfig.address_prefix = 'BTS';
 
 
-function create_escrow_transaction(byerAcc, sellerAcc, escrowAcc) {
+function create_escrow_transaction(key, byerAcc, sellerAcc, escrowAcc) {
     TransactionBuilder.fetch_base_expiration_sec().then(sec => {
         let tr = new TransactionBuilder();
         tr.add_type_operation("escrow_create_operation", {
@@ -23,7 +23,6 @@ function create_escrow_transaction(byerAcc, sellerAcc, escrowAcc) {
             },
             transfer_to_escrow: false,
         });
-        let key = generateKeyFromPassword("denis77", "active", "P5Jib3SrwkFpunWXDYreu2MK5DLzg9FGija47DPLr3XnU");
         tr.set_required_fees().then(() => {
             tr.add_signer(key.privKey, key.privKey.toPublicKey().toPublicKeyString("BTS"));
             tr.broadcast();
@@ -31,15 +30,15 @@ function create_escrow_transaction(byerAcc, sellerAcc, escrowAcc) {
     });
 }
 
-function release_escrow_transaction(escrow, buyerAcc, escrowAcc) {
+function release_escrow_transaction(key, escrow, buyerAcc, escrowAcc, sellerAcc) {
     FetchChain('getAccount', 'denis14').then(acc => {
         let tr = new TransactionBuilder();
-        let key = generateKeyFromPassword("denis14", "active", "P5KY4U1Kqpy7irReWCnQLxKmMvSkPGdtUMXM7HFJPPQwL");
         tr.add_type_operation("escrow_release_operation", {
             fee_paying_account: acc.get('id'),
             escrow,
             buyer_account: buyerAcc.get('id'),
             escrow_account: escrowAcc.get('id'),
+            seller_account: sellerAcc.get('id'),
             reputation_vote_for_seller: 0,
             reputation_vote_for_buyer: 5,
             reputation_vote_for_escrow: 0,
@@ -52,7 +51,7 @@ function release_escrow_transaction(escrow, buyerAcc, escrowAcc) {
     });
 }
 
-function return_escrow_transaction(escrow, sellerAcc, escrowAcc) {
+function return_escrow_transaction(key, escrow, sellerAcc, escrowAcc, buyerAcc) {
     FetchChain('getAccount', 'denis16').then(acc => {
         let tr = new TransactionBuilder();
         tr.add_type_operation("escrow_return_operation", {
@@ -60,11 +59,11 @@ function return_escrow_transaction(escrow, sellerAcc, escrowAcc) {
             escrow,
             seller_account: sellerAcc.get('id'),
             escrow_account: escrowAcc.get('id'),
+            buyer_account: buyerAcc.get('id'),
             reputation_vote_for_seller: 0,
             reputation_vote_for_buyer: 0,
             reputation_vote_for_escrow: 0
         });
-        let key = generateKeyFromPassword("denis16", "active", "P5Jvx7AYGmompLWKAaoqZuvmXqtjsRLpKoudUkyVNaVaj");
         tr.set_required_fees().then(() => {
             tr.add_signer(key.privKey, key.privKey.toPublicKey().toPublicKeyString("BTS"));
             tr.broadcast();
@@ -84,9 +83,11 @@ Apis.instance("ws://35.171.116.3:8090", true)
             FetchChain("getAccount", escrow),
         ]).then((res)=> {
             const [buyerAcc, sellerAcc, escrowAcc] = res;
-            // create_escrow_transaction(buyerAcc, sellerAcc, escrowAcc);
-            release_escrow_transaction('1.16.7', buyerAcc, escrowAcc);
-            // return_escrow_transaction('1.16.1', sellerAcc, escrowAcc);
+            const key = generateKeyFromPassword("denis14", "active", "P5KY4U1Kqpy7irReWCnQLxKmMvSkPGdtUMXM7HFJPPQwL");
+            const trId = '1.16.25';
+            // create_escrow_transaction(key, buyerAcc, sellerAcc, escrowAcc);
+            release_escrow_transaction(key, trId, buyerAcc, escrowAcc, sellerAcc);
+            // return_escrow_transaction(key, trId, sellerAcc, escrowAcc, sellerAcc);
         });
 
     })
