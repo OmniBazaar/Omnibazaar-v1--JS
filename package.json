@@ -1,6 +1,6 @@
 {
   "name": "omnibazaarjs",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Omnibazaar lib",
   "browser": {
     "ws": false,
@@ -77,6 +77,6 @@
     "mkdirp": "^0.5.1",
     "mocha": "^3.2.0",
     "rimraf": "^2.6.1",
-    "uglify-js": "^3.3.27"
+    "uglify-js": "^3.4.0"
   }
 }
