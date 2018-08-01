@@ -1,6 +1,6 @@
 {
   "name": "omnibazaarjs",
-  "version": "1.31.0",
+  "version": "1.32.0",
   "description": "Omnibazaar lib",
   "browser": {
     "ws": false,
